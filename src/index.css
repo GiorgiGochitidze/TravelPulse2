@@ -1,0 +1,12 @@
+:root {
+  overflow-x: hidden;
+  --index: calc(1vw + 1vh);
+	--transition: 1.5s cubic-bezier(.05, .5, 0, 1);
+  font-family: 'Urbanist', sans-serif;
+}
+
+[style*="cursor: pointer"], /* Target elements with inline cursor:pointer style */
+[style*="cursor: hand"],    /* Target elements with inline cursor:hand style */
+a, button {
+  cursor: url('./assets/handcursor.png'), auto;
+}

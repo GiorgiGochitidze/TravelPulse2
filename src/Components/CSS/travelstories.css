@@ -1,0 +1,307 @@
+.travelstories-container {
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-block: 15px;
+  gap: 80px;
+  margin-top: 50px;
+}
+
+.travelstories-heading-container {
+  display: flex;
+  width: 100%;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.travelstories-btn {
+  width: 200px;
+  height: 38px;
+  border: 1px solid #4169e1;
+  color: #4169e1;
+  border-radius: 18px;
+  background-color: transparent;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pencilicon {
+  position: absolute;
+  left: 15px;
+  top: 8px;
+}
+
+.heart-icon {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 2;
+}
+
+.heart-icon:hover {
+  cursor: url("/src/assets/handcursor.png"), auto;
+}
+
+.travelstories-list {
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  align-items: center;
+  gap: 30px;
+}
+
+.travelstories-card {
+  max-width: 600px;
+  width: auto;
+  height: auto;
+  min-height: 400px;
+  overflow: hidden;
+  border-radius: 20px;
+  padding: 15px;
+}
+
+.travelstories-card img {
+  width: 100%;
+  max-height: 350px;
+  height: auto;
+  border-radius: 20px;
+}
+
+.travelstories-date-container {
+  width: 100%;
+  height: 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: gray;
+  font-weight: 400;
+}
+
+.travelstories-card h2 {
+  margin-bottom: 20px;
+}
+
+.travelstories-card :nth-child(4) {
+  text-align: justify;
+  font-weight: 500;
+  height: 60px;
+  overflow: hidden;
+}
+
+.upload-image-container {
+  width: 100%;
+  height: auto;
+  /* background: red; */
+  display: flex;
+  /* gap: 50px; */
+  justify-content: center;
+  align-items: center;
+  font-family: "Urbanist", sans-serif;
+}
+
+.image-dropbox-container{
+  width: 50%;
+  min-height: 400px;
+  height: auto;
+  display: flex;
+  justify-content: center;
+}
+
+.form-container{
+  width: 50%;
+  /* background-color: red; */
+  min-height: 400px;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.name-desc-container{
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.name-desc-container label{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.name-desc-container label input{
+  width: 90%;
+  height: 28px;
+  border-radius: 5px;
+  border: 2px solid lightgray;
+  padding: 10px;
+  font-family: 'Urbanist', sans-serif;
+}
+
+label input:focus{
+  outline: none;
+}
+
+label textarea:focus{
+  outline: none;
+}
+
+.name-desc-container label textarea{
+  width: 90%;
+  min-height: 70px;
+  min-width: 80px;
+  height: auto;
+  border-radius: 5px;
+  border: 2px solid lightgray;
+  padding: 10px;
+  font-family: 'Urbanist', sans-serif;
+}
+
+.image-dropbox{
+  width: 80%;
+  height: auto;
+  background-color: lightgray;
+  border-radius: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 15px;
+}
+
+.date-form-container{
+  width: 100%;
+  min-height: 100px;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.date-form-container label{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.date-form-container label input{
+  width: 225px;
+  height: 28px;
+  border-radius: 5px;
+  border: 2px solid lightgray;
+  padding: 10px;
+  font-family: 'Urbanist', sans-serif;
+}
+
+.checkbox-container{
+  width: 100%;
+  height: auto;
+  display: flex;
+  position: relative;
+}
+
+
+.checkbox-container input{
+  position: absolute;
+  top: 4px;
+  left: -20px;
+  width: 30px;
+  height: 30px;
+}
+
+.checkbox-container p{
+  margin-left: 20px;
+}
+
+.choosen-img{
+  width: 95%;
+  border-radius: 5px;
+  box-sizing: border-box;
+  height: 90%;
+}
+
+.submit-btn{
+  width: 200px;
+  height: 38px;
+  border-radius: 15px;
+  border: 0;
+  margin-top: 20px;
+}
+
+@media screen and (max-width: 1020px) {
+  .date-form-container{
+    flex-direction: column;
+    gap: 20px;
+    padding-block: 20px;
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 650px) {
+  .upload-image-container{
+    flex-direction: column;
+  }
+
+  .date-form-container label input{
+    width: 300px;
+    height: 38px;
+  }
+
+  .name-desc-container{
+    width: 90%;
+  }
+
+  .image-dropbox-container{
+    width: 100%;
+    margin-block: 20px;
+  }
+
+  .image-dropbox{
+    width: 90%;
+    height: auto;
+    max-height: 400px;
+  }
+
+  .form-container{
+    width: 100%;
+  }
+
+  .checkbox-container input{
+    position: initial;
+  }
+
+  .checkbox-container{
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+
+@media screen and (max-width: 571px) {
+  .travelstories-heading-container {
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+  }
+}
+
+@media screen and (max-width: 360px) {
+
+  .date-form-container{
+    width: auto;
+  }
+  .date-form-container label input{
+    width: 90%;
+  }
+}

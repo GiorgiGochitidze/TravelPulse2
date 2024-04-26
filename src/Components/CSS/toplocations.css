@@ -1,0 +1,97 @@
+.toplocations-container {
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-block: 15px;
+  gap: 80px;
+}
+
+.toplocations-heading-container {
+  display: flex;
+  width: 100%;
+  height: auto;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.arrowbuttons-container {
+  width: auto;
+  display: flex;
+  gap: 30px;
+}
+
+.arrowbuttons-container button {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 0;
+  background-color: lightgray;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: 0.2s all;
+}
+
+.arrowbuttons-container button:hover {
+  cursor: pointer;
+  background: #4169e1;
+}
+
+.toplocations-list {
+  width: 100%;
+  overflow-x: auto; /* Enable horizontal scrolling */
+  white-space: nowrap;
+  /* flex-wrap: wrap; */
+}
+
+.toplocations-scroll {
+    display: inline-flex; /* Ensure cards stay in a single row */
+    gap: 20px;
+    padding-right: 20px;
+}
+
+.toplocations-card {
+  width: 300px;
+  height: 340px;
+  border-radius: 20px;
+  overflow: hidden;
+  margin-left: 30px;
+}
+
+.toplocations-card img {
+  width: 100%;
+  border-radius: 20px;
+}
+
+.toplocations-card p {
+  color: gray;
+}
+
+.toplocations-card h2 {
+  margin-top: 10px;
+}
+
+.toplocations-list::-webkit-scrollbar {
+  background: transparent;
+}
+
+@media screen and (max-width: 590px) {
+  .toplocations-heading-container {
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+  }
+}
+
+@media screen and (max-width: 342px) {
+  .toplocations-card {
+    width: 90%;
+    text-align: center;
+  }
+
+  .toplocations-scroll {
+    gap: 0;
+  }
+}

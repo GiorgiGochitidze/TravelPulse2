@@ -1,0 +1,13 @@
+*{
+  margin: 0;
+  padding: 0;
+}
+
+body{
+  overflow-x: hidden;
+  cursor: url('./assets/mousecursor.png'), auto;
+}
+
+html{
+  overflow-x: hidden;
+}
