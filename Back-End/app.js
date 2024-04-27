@@ -9,6 +9,7 @@ const mongoose = require("mongoose");
 const User = require("./User");
 require("dotenv").config();
 const { MongoClient, ServerApiVersion } = require("mongodb");
+const StoriesSchema = require('./StoriesData')
 
 const app = express();
 app.use(express.json());
@@ -42,8 +43,11 @@ async function run() {
 }
 run().catch(console.dir);
 
+
+// if you want to connect to a specified database after url you need to write /and here database name for example 27017/Users
+// otherwise it will navigate everything to test database which is set as default database
 mongoose
-  .connect(uri)
+  .connect('mongodb://localhost:27017/')
   .then(() => {
     console.log("Connected to MongoDB");
   })
@@ -97,91 +101,80 @@ const generateToken = (user) => {
   });
 };
 
-app.post("/createBlogStories", upload.single("image"), (req, res) => {
+// app.post("/createBlogStories", upload.single("image"), (req, res) => {
+//   const { country, publish_date, title, content } = req.body;
+
+//   const imagePathInUploads = req.file ? `uploads/${req.file.filename}` : null;
+
+//   const story = {
+//     img: imagePathInUploads,
+//     country,
+//     publish_date,
+//     title,
+//     content,
+//   };
+
+//   fs.readFile("blogStories.json", (err, data) => {
+//     if (err) {
+//       console.log(err);
+//       return res.status(500).send("Internal Server Error");
+//     }
+
+//     let stories = JSON.parse(data);
+
+//     stories.push(story);
+
+//     fs.writeFile(
+//       "blogStories.json",
+//       JSON.stringify(stories, null, 2),
+//       (err) => {
+//         if (err) {
+//           console.log(err);
+//           res.status(500).status("Internal Server Error", err);
+//         }
+
+//         res.status(200).send("Blog Stories added succesfully");
+//       }
+//     );
+//   });
+// });
+
+app.post('/createBlogStories', upload.single("image"), (req, res) => {
   const { country, publish_date, title, content } = req.body;
 
   const imagePathInUploads = req.file ? `uploads/${req.file.filename}` : null;
 
-  const story = {
+  const newStory = new StoriesSchema({
     img: imagePathInUploads,
-    country,
-    publish_date,
-    title,
-    content,
-  };
-
-  fs.readFile("blogStories.json", (err, data) => {
-    if (err) {
-      console.log(err);
-      return res.status(500).send("Internal Server Error");
-    }
-
-    let stories = JSON.parse(data);
-
-    stories.push(story);
-
-    fs.writeFile(
-      "blogStories.json",
-      JSON.stringify(stories, null, 2),
-      (err) => {
-        if (err) {
-          console.log(err);
-          res.status(500).status("Internal Server Error", err);
-        }
-
-        res.status(200).send("Blog Stories added succesfully");
-      }
-    );
+    country: country,
+    publish_date: publish_date,
+    title: title,
+    content: content
   });
+
+  // Save the new story to the database
+  newStory.save()
+    .then(() => {
+      console.log("New story added successfully");
+      res.status(200).send("New story added successfully");
+    })
+    .catch((err) => {
+      console.error("Error adding new story:", err);
+      res.status(500).send("Internal Server Error");
+    });
 });
+
 
 app.post("/loadBlogStories", (req, res) => {
-  fs.readFile("blogStories.json", (err, data) => {
-    if (err) {
-      console.log(err);
-      res.status(500).send("Internal Server Error", err);
-    }
-
-    const stories = JSON.parse(data);
-    res.status(200).json(stories);
-  });
+  StoriesSchema.find({})
+    .then((stories) => {
+      res.status(200).json(stories);
+    })
+    .catch((err) => {
+      console.error("Error loading blog stories:", err);
+      res.status(500).send("Internal Server Error");
+    });
 });
-
-// app.post("/login", (req, res) => {
-//   const { username, gmail, password } = req.body;
-
-//   // Find user by email
-//   const user = users.find(
-//     (user) => user.gmail === gmail && user.username === username
-//   );
-//   if (!user) {
-//     return res.status(401).json({ message: "Login failed. User not found." });
-//   }
-
-//   // Check if password is correct
-//   bcrypt.compare(password, user.password, (err, result) => {
-//     if (err || !result) {
-//       return res
-//         .status(401)
-//         .json({ message: "Login failed. Incorrect password." });
-//     }
-
-//     // Generate JWT token
-//     const token = generateToken({ username: user.username });
-
-//     // Add token to the user object
-//     user.token = token;
-
-//     // Write updated users data to data.json file
-//     fs.writeFile("data.json", JSON.stringify(users, null, 2), (err) => {
-//       if (err) {
-//         console.error(err);
-//         return res.status(500).json({ message: "Internal Server Error" });
-//       }
-//       res.status(200).json({ message: "Login successful", token, user });
-//     });
-//   });
-// });
 
 app.post("/login", (req, res) => {
   const { username, gmail, password } = req.body;

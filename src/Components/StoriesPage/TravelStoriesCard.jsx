@@ -14,13 +14,14 @@ const TravelStoriesCard = ({ rateContainer }) => {
 
   useEffect(() => {
     axios
-      .post("https://travelpulse.onrender.com/loadBlogStories") // Assuming the endpoint is /blogStories
+      .post("http://localhost:5000/loadBlogStories") // Assuming the endpoint is /blogStories
       .then((response) => {
         // Check if response.data is an array before setting state
         // Set the storiesData state with the fetched data
 
         setStoriesData(response.data)
 
+        
         // Initialize likes, colors, and liked state arrays based on the length of fetched data
         setLikes(new Array(response.data.length).fill(0));
         setColors(new Array(response.data.length).fill("white"));
@@ -29,8 +30,8 @@ const TravelStoriesCard = ({ rateContainer }) => {
       .catch((error) => {
         console.error("Error fetching blog stories:", error);
       });
-  }, []);
-
+    }, []);
+    
   const handleLike = (index) => {
     // Toggle the liked state for the clicked card
     const newLiked = [...liked];
@@ -61,7 +62,7 @@ const TravelStoriesCard = ({ rateContainer }) => {
             <img
               data-aos="fade-in"
               data-aos-delay={index + "00"}
-              src={`https://travelpulse.onrender.com/${story.img}`}
+              src={`http://localhost:5000/${story.img}`}
               className="image"
               alt="croatia img"
             />

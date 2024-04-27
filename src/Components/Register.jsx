@@ -23,7 +23,7 @@ const Register = () => {
     handleCheckGmail();
 
     axios
-      .post("https://travelpulse.onrender.com/register/", userData)
+      .post("http://localhost:5000/register/", userData)
       .then((response) => {
         // Handle successful response
         console.log('Registered User Succesfully')
