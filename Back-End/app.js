@@ -43,7 +43,7 @@ async function run() {
 run().catch(console.dir);
 
 mongoose
-  .connect("mongodb://localhost:27017/Users")
+  .connect(uri)
   .then(() => {
     console.log("Connected to MongoDB");
   })
