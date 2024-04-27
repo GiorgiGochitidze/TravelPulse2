@@ -5,11 +5,10 @@ import { jwtDecode } from "jwt-decode";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const LogIn = ({userName, setLoggedIn, setUserName}) => {
+const LogIn = ({ userName, setLoggedIn, setUserName }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-
 
   const navigate = useNavigate();
 
@@ -24,28 +23,29 @@ const LogIn = ({userName, setLoggedIn, setUserName}) => {
     setLoading(true);
 
     // Make a POST request to login endpoint
-    axios.post("http://localhost:5000/login/", userData)
-    .then((response) => {
-      const {user} = response.data
+    axios
+      .post("http://localhost:5000/login/", userData)
+      .then((response) => {
+        const { token } = response.data;
 
-      sessionStorage.setItem('token', user.token)
+        sessionStorage.setItem("token", token);
 
-      const decoded = jwtDecode(user.token)
+        const decoded = jwtDecode(token);
 
-      console.log(decoded.username)
+        console.log(decoded.username);
 
-      navigate('/');
+        navigate("/");
 
-      window.location.reload()
+        window.location.reload();
 
-      setLoggedIn(true)
-    })
-    .catch((error) => {
-      console.error("Error:", error);
-    })
-    .finally(() => {
-      setLoading(false);
-    });
+        setLoggedIn(true);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   return (

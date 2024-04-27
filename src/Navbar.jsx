@@ -33,6 +33,7 @@ const Navbar = ({loggedIn, setLoggedIn}) => {
     setLoggedIn(false);
     // Redirect to the home page
     navigate("/");
+    window.location.reload()
   }
 
 

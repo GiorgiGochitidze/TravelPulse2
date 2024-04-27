@@ -18,7 +18,8 @@ const TravelStoriesCard = ({ rateContainer }) => {
       .then((response) => {
         // Check if response.data is an array before setting state
         // Set the storiesData state with the fetched data
-        setStoriesData(response.data);
+
+        setStoriesData(response.data)
 
         // Initialize likes, colors, and liked state arrays based on the length of fetched data
         setLikes(new Array(response.data.length).fill(0));
