@@ -47,7 +47,7 @@ run().catch(console.dir);
 // if you want to connect to a specified database after url you need to write /and here database name for example 27017/Users
 // otherwise it will navigate everything to test database which is set as default database
 mongoose
-  .connect(uri)
+  .connect('mongodb://localhost:27017/')
   .then(() => {
     console.log("Connected to MongoDB");
   })
@@ -67,20 +67,10 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-let users = [];
 
 app.get("/", (req, res) => {
   res.status(200).send(`<h1>Hello World</h1>`);
 });
-
-fs.readFile("data.json", (err, data) => {
-  if (!err) {
-    users = JSON.parse(data);
-  } else {
-    console.log(err);
-  }
-});
-
 // function to generate random string for secret key in jwt token
 const generateRandomString = (length) => {
   const charset =
@@ -100,44 +90,6 @@ const generateToken = (user) => {
     expiresIn: "2h",
   });
 };
-
-// app.post("/createBlogStories", upload.single("image"), (req, res) => {
-//   const { country, publish_date, title, content } = req.body;
-
-//   const imagePathInUploads = req.file ? `uploads/${req.file.filename}` : null;
-
-//   const story = {
-//     img: imagePathInUploads,
-//     country,
-//     publish_date,
-//     title,
-//     content,
-//   };
-
-//   fs.readFile("blogStories.json", (err, data) => {
-//     if (err) {
-//       console.log(err);
-//       return res.status(500).send("Internal Server Error");
-//     }
-
-//     let stories = JSON.parse(data);
-
-//     stories.push(story);
-
-//     fs.writeFile(
-//       "blogStories.json",
-//       JSON.stringify(stories, null, 2),
-//       (err) => {
-//         if (err) {
-//           console.log(err);
-//           res.status(500).status("Internal Server Error", err);
-//         }
-
-//         res.status(200).send("Blog Stories added succesfully");
-//       }
-//     );
-//   });
-// });
 
 app.post('/createBlogStories', upload.single("image"), (req, res) => {
   const { country, publish_date, title, content } = req.body;
@@ -251,49 +203,31 @@ app.post("/register", (req, res) => {
     });
 });
 
-// app.post("/register", (req, res) => {
-//   const { username, gmail, password } = req.body;
+app.post("/likeStory", (req, res) => {
+  const { storyId, liked } = req.body;
 
-//   const newUser = new User({name: username})
+  // Find the corresponding story in the StoriesSchema
+  StoriesSchema.findById(storyId)
+    .then((story) => {
+      if (!story) {
+        return res.status(404).json({ error: "Story not found" });
+      }
 
-//   newUser.save()
-//     .then(() => {
-//       console.log("New user added successfully");
-//       res.status(200).send("New user added successfully");
-//     })
-//     .catch(err => {
-//       console.error("Error adding new user:", err);
-//       res.status(500).send("Internal Server Error");
-//     });
+      // Update the like count based on the like status sent from the client
+      story.likes += liked ? 1 : -1;
 
-//   const existingUser = users.find(
-//     (user) => user.username === username || user.gmail === gmail
-//   );
+      // Save the updated story document
+      return story.save();
+    })
+    .then(() => {
+      res.status(200).json({ message: "Like status updated successfully" });
+    })
+    .catch((err) => {
+      console.error("Error updating like status:", err);
+      res.status(500).json({ error: "Internal Server Error" });
+    });
+});
 
-//   if (existingUser) {
-//     res.status(500).send("Username or Gmail already exists");
-//   }
-
-//   bcrypt.hash(password, 10, (err, hash) => {
-//     if (err) {
-//       res.status(500).send("Internal Server Error", err);
-//       console.log(err);
-//     }
-
-//     users.push({ username, gmail, password: hash });
-
-//     const usersJSON = JSON.stringify(users, null, 2);
-
-//     fs.writeFile("data.json", usersJSON, (err) => {
-//       if (!err) {
-//         res.status(200).send("Data Written Succesful");
-//         console.log("Data Written Succesful");
-//       } else {
-//         res.status(500).send("Internal Server Error");
-//       }
-//     });
-//   });
-// });
 
 app.listen(PORT, () => {
   console.log(`Server is running on localhost:${PORT}`);

@@ -14,45 +14,57 @@ const TravelStoriesCard = ({ rateContainer }) => {
 
   useEffect(() => {
     axios
-      .post("https://travelpulse.onrender.com/loadBlogStories") // Assuming the endpoint is /blogStories
+      .post("http://localhost:5000/loadBlogStories")
       .then((response) => {
-        // Check if response.data is an array before setting state
         // Set the storiesData state with the fetched data
+        setStoriesData(response.data);
 
-        setStoriesData(response.data)
-
-        
-        // Initialize likes, colors, and liked state arrays based on the length of fetched data
-        setLikes(new Array(response.data.length).fill(0));
-        setColors(new Array(response.data.length).fill("white"));
-        setLiked(new Array(response.data.length).fill(false));
+        // Initialize likes, colors, and liked state based on fetched data
+        const initialLikes = response.data.map((story) => story.likes);
+        const initialLiked = response.data.map((story) => story.liked || false);
+        setLikes(initialLikes);
+        setLiked(initialLiked);
+        setColors(initialLiked.map((isLiked) => (isLiked ? "red" : "white")));
       })
       .catch((error) => {
         console.error("Error fetching blog stories:", error);
       });
-    }, []);
-    
-  const handleLike = (index) => {
-    // Toggle the liked state for the clicked card
+  }, []);
+
+  const handleLike = async (index) => {
+    // Toggle the liked state for the clicked post
     const newLiked = [...liked];
     newLiked[index] = !newLiked[index];
-
-    // Update the state with the new liked state
     setLiked(newLiked);
 
-    // Update the likes count based on the liked state
+    // Update the like count based on the liked state
     const newLikes = [...likes];
     newLikes[index] = newLiked[index] ? likes[index] + 1 : likes[index] - 1;
+    setLikes(newLikes);
 
-    // Update the color for the clicked card
+    // Toggle the color based on the liked state
     const newColors = [...colors];
     newColors[index] = newLiked[index] ? "red" : "white";
-
-    // Update the state with the new like count and colors
-    setLikes(newLikes);
     setColors(newColors);
-  };
 
+    const storyId = storiesData[index]._id;
+
+    try {
+      // Send the like status along with the story ID to the server
+      await axios.post("http://localhost:5000/likeStory", {
+        storyId: storyId,
+        liked: newLiked[index], // Send the updated like status
+      });
+      console.log("Like action sent successfully");
+    } catch (error) {
+      console.error("Error sending like action:", error);
+      // If there's an error, revert the changes made to the state
+      setLiked([...liked]);
+      setLikes([...likes]);
+      setColors([...colors]);
+      // You can also display an error message to the user
+    }
+  };
 
   return (
     <>
@@ -62,7 +74,7 @@ const TravelStoriesCard = ({ rateContainer }) => {
             <img
               data-aos="fade-in"
               data-aos-delay={index + "00"}
-              src={`https://travelpulse.onrender.com/${story.img}`}
+              src={`http://localhost:5000/${story.img}`}
               className="image"
               alt="croatia img"
             />
@@ -70,19 +82,24 @@ const TravelStoriesCard = ({ rateContainer }) => {
               <FaHeart
                 onClick={() => handleLike(index)}
                 onMouseEnter={() =>
-                  setColors((colors) =>
-                    colors.map((color, i) => (i === index ? "red" : color))
+                  setColors((prevColors) =>
+                    prevColors.map((color, i) =>
+                      i === index ? (liked[index] ? "white" : "red") : color
+                    )
                   )
                 }
                 onMouseLeave={() =>
-                  setColors((colors) =>
-                    colors.map((color, i) => (i === index ? "white" : color))
+                  setColors((prevColors) =>
+                    prevColors.map((color, i) =>
+                      i === index ? (liked[index] ? "red" : "white") : color
+                    )
                   )
                 }
                 size={25}
                 className="heart-icon"
                 style={{ color: colors[index] }}
-                disabled={liked[index]} // Disable the like button if the card has already been liked
+                // Disable the like button if the card has already been liked
+                disabled={liked[index]}
               />
             )}
           </div>

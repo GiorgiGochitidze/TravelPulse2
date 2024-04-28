@@ -1,11 +1,17 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
-const StoriesSchema = new mongoose.Schema({
-    img: String,
-    country: String,
-    publish_date: String,
-    title: String,
-    content: String,
-})
+const storySchema = new mongoose.Schema({
+  img: String,
+  country: String,
+  publish_date: String,
+  title: String,
+  content: String,
+  likes: {
+    type: Number,
+    default: 0 // Default value for the likes field is 0
+  }
+});
 
-module.exports = mongoose.model('stories', StoriesSchema)
+const StoriesSchema = mongoose.model('Stories', storySchema);
+
+module.exports = StoriesSchema;
