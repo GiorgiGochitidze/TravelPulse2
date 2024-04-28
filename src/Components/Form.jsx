@@ -1,7 +1,7 @@
 import "./CSS/form.css";
 import { motion } from "framer-motion";
 
-const Form = ({ heading, inputName, handleFormSubmit, inputGmail, inputPassword, userName, email, password, setUserName, setEmail, setPassword }) => {
+const Form = ({ errorMessage, heading, inputName, handleFormSubmit, inputGmail, inputPassword, userName, email, password, setUserName, setEmail, setPassword }) => {
 
   return (
     <motion.div
@@ -78,6 +78,8 @@ const Form = ({ heading, inputName, handleFormSubmit, inputGmail, inputPassword,
             type="password"
           />
         </motion.label>
+
+        {errorMessage && <p style={{color: 'white'}}>{errorMessage}</p>}
 
         <motion.button
           initial={{ opacity: 0, y: 500 }}

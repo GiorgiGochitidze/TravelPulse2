@@ -9,25 +9,49 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate()
+  const [errorMessage, setErrorMessage] = useState(""); // State for error message
+  const navigate = useNavigate();
 
   const handleRegister = () => {
+    if (!userName || !email || !password) {
+      setErrorMessage("All fields are required"); // Set error message
+      setTimeout(() => {
+        setErrorMessage(false)
+      }, 1500)
+      console.error("All fields are required");
+      return; // Exit early if any field is empty
+    } else {
+      setErrorMessage(""); // Clear error message if all fields are filled
+    }
+
+    if (!handleCheckGmail()) {
+      setErrorMessage("Incorrect email format");
+      setTimeout(() => {
+        setErrorMessage("");
+      }, 1500);
+      console.error("Incorrect email format");
+      return; // Exit early if email is incorrect
+    }
+  
+
     const userData = {
       username: userName,
       gmail: email,
       password: password,
     };
 
-    setLoading(true)
-
+    setLoading(true);
+    
     handleCheckGmail();
-
+    
     axios
       .post("https://travelpulse.onrender.com/register/", userData)
       .then((response) => {
         // Handle successful response
-        console.log('Registered User Succesfully')
-        navigate('/')
+        console.log("Registered User Successfully");
+        setTimeout(() => {
+          navigate("/LogIn");
+        }, 1500);
       })
       .catch((error) => {
         // Handle error
@@ -37,15 +61,13 @@ const Register = () => {
 
   const handleCheckGmail = () => {
     // Check if the email ends with '@gmail.com'
-    if (email.endsWith("@gmail.com")) {
-    console.log("correct");
-  } else {
-    console.log("incorrect");
-  }
-};
+    return email.endsWith("@gmail.com");
+  };
 
   return (
     <div className="registration-container">
+      {/* Error message */}
+
       <Form
         handleFormSubmit={handleRegister}
         heading={"Hi, Get Started Now"}
@@ -58,11 +80,12 @@ const Register = () => {
         setPassword={setPassword}
         setUserName={setUserName}
         setEmail={setEmail}
+        errorMessage={errorMessage}
       />
 
-{loading && (
+      {loading && (
         <div className="loading-container">
-          Loading
+          Registered successfully. You are being redirected to the login page.
           <div className="circle">
             <div className="circle2"></div>
           </div>
