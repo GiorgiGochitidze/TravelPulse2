@@ -14,7 +14,7 @@ const TravelStoriesCard = ({ rateContainer }) => {
 
   useEffect(() => {
     axios
-      .post("http://localhost:5000/loadBlogStories") // Assuming the endpoint is /blogStories
+      .post("https://travelpulse.onrender.com/loadBlogStories") // Assuming the endpoint is /blogStories
       .then((response) => {
         // Check if response.data is an array before setting state
         // Set the storiesData state with the fetched data
@@ -62,7 +62,7 @@ const TravelStoriesCard = ({ rateContainer }) => {
             <img
               data-aos="fade-in"
               data-aos-delay={index + "00"}
-              src={`http://localhost:5000/${story.img}`}
+              src={`https://travelpulse.onrender.com/${story.img}`}
               className="image"
               alt="croatia img"
             />
