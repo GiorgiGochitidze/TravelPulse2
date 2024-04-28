@@ -24,7 +24,7 @@ const LogIn = ({ userName, setLoggedIn, setUserName }) => {
 
     // Make a POST request to login endpoint
     axios
-      .post("http://localhost:5000/login/", userData)
+      .post("https://travelpulse.onrender.com/login/", userData)
       .then((response) => {
         const { token } = response.data;
 

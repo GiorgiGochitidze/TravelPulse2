@@ -14,7 +14,7 @@ const TravelStoriesCard = ({ rateContainer }) => {
 
   useEffect(() => {
     axios
-      .post("http://localhost:5000/loadBlogStories")
+      .post("https://travelpulse.onrender.com/loadBlogStories")
       .then((response) => {
         // Set the storiesData state with the fetched data
         setStoriesData(response.data);
@@ -51,7 +51,7 @@ const TravelStoriesCard = ({ rateContainer }) => {
 
     try {
       // Send the like status along with the story ID to the server
-      await axios.post("http://localhost:5000/likeStory", {
+      await axios.post("https://travelpulse.onrender.com/likeStory", {
         storyId: storyId,
         liked: newLiked[index], // Send the updated like status
       });
@@ -74,7 +74,7 @@ const TravelStoriesCard = ({ rateContainer }) => {
             <img
               data-aos="fade-in"
               data-aos-delay={index + "00"}
-              src={`http://localhost:5000/${story.img}`}
+              src={`https://travelpulse.onrender.com/${story.img}`}
               className="image"
               alt="croatia img"
             />

@@ -47,7 +47,7 @@ run().catch(console.dir);
 // if you want to connect to a specified database after url you need to write /and here database name for example 27017/Users
 // otherwise it will navigate everything to test database which is set as default database
 mongoose
-  .connect('mongodb://localhost:27017/')
+  .connect(uri)
   .then(() => {
     console.log("Connected to MongoDB");
   })
