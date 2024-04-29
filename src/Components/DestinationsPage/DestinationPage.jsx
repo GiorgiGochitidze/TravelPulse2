@@ -1,8 +1,11 @@
+import { useState } from "react";
 import "./CSS/destinationspage.css";
 import SearchBar from "./SearchBar";
 import { motion } from "framer-motion";
 
 const DestinationPage = () => {
+  const [addDestination, setAddDestination] = useState(false);
+
   return (
     <div className="destinationspage-container">
       <div className="landing-image-container">
@@ -36,7 +39,7 @@ const DestinationPage = () => {
         </div>
       </div>
 
-      <SearchBar />
+      {!addDestination && <SearchBar />}
     </div>
   );
 };

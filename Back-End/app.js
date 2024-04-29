@@ -9,7 +9,10 @@ const mongoose = require("mongoose");
 const User = require("./User");
 require("dotenv").config();
 const { MongoClient, ServerApiVersion } = require("mongodb");
-const StoriesSchema = require('./StoriesData')
+const StoriesSchema = require("./StoriesData");
+const Card = require("./DestinationsCard");
+const { v2: cloudinary } = require('cloudinary');
+
 
 const app = express();
 app.use(express.json());
@@ -19,6 +22,7 @@ app.use(cors());
 app.use("/uploads", express.static("uploads"));
 
 const passwordDB = process.env.USERPASS;
+const ApiSecretKey = process.env.CLOUDINARY_APISECRET
 
 const uri = `mongodb+srv://giorgigochitidze5555:${passwordDB}@cluster0.rpheryv.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -27,7 +31,7 @@ const client = new MongoClient(uri, {
     version: ServerApiVersion.v1,
     strict: true,
     deprecationErrors: true,
-  }
+  },
 });
 async function run() {
   try {
@@ -35,7 +39,9 @@ async function run() {
     await client.connect();
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    console.log(
+      "Pinged your deployment. You successfully connected to MongoDB!"
+    );
   } finally {
     // Ensures that the client will close when you finish/error
     await client.close();
@@ -43,6 +49,12 @@ async function run() {
 }
 run().catch(console.dir);
 
+          
+cloudinary.config({ 
+  cloud_name: 'dkjabjayn', 
+  api_key: '634984545767666',
+  api_secret: ApiSecretKey
+});
 
 // if you want to connect to a specified database after url you need to write /and here database name for example 27017/Users
 // otherwise it will navigate everything to test database which is set as default database
@@ -67,7 +79,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-
 app.get("/", (req, res) => {
   res.status(200).send(`<h1>Hello World</h1>`);
 });
@@ -91,30 +102,42 @@ const generateToken = (user) => {
   });
 };
 
-app.post('/createBlogStories', upload.single("image"), (req, res) => {
+app.post("/createBlogStories", upload.single('image'), (req, res) => {
   const { country, publish_date, title, content } = req.body;
 
-  const imagePathInUploads = req.file ? `uploads/${req.file.filename}` : null;
+  // Assuming multer middleware saves the uploaded image to req.file
+  const imagePathInUploads = req.file ? req.file.path : null;
 
-  const newStory = new StoriesSchema({
-    img: imagePathInUploads,
-    country: country,
-    publish_date: publish_date,
-    title: title,
-    content: content
-  });
+  // Upload image to Cloudinary
+  cloudinary.uploader.upload(imagePathInUploads, { folder: "blog_images" }, (error, result) => {
+    if (error) {
+      console.error("Error uploading image to Cloudinary:", error);
+      return res.status(500).send("Internal Server Error");
+    }
 
-  // Save the new story to the database
-  newStory.save()
-    .then(() => {
-      console.log("New story added successfully");
-      res.status(200).send("New story added successfully");
-    })
-    .catch((err) => {
-      console.error("Error adding new story:", err);
-      res.status(500).send("Internal Server Error");
+    // Create a new story instance with the Cloudinary image URL
+    const newStory = new StoriesSchema({
+      img: result.secure_url,
+      country: country,
+      publish_date: publish_date,
+      title: title,
+      content: content,
     });
+
+    // Save the new story to the database
+    newStory.save()
+      .then(() => {
+        console.log("New story added successfully");
+        res.status(200).send("New story added successfully");
+      })
+      .catch((err) => {
+        console.error("Error adding new story:", err);
+        res.status(500).send("Internal Server Error");
+      });
+  });
 });
+
+
 
 
 app.post("/loadBlogStories", (req, res) => {
@@ -134,7 +157,9 @@ app.post("/login", (req, res) => {
   User.findOne({ username, gmail })
     .then((user) => {
       if (!user) {
-        return res.status(404).json({ error: "User not found", message: 'User Not Found' });
+        return res
+          .status(404)
+          .json({ error: "User not found", message: "User Not Found" });
       }
 
       bcrypt
@@ -227,7 +252,6 @@ app.post("/likeStory", (req, res) => {
       res.status(500).json({ error: "Internal Server Error" });
     });
 });
-
 
 app.listen(PORT, () => {
   console.log(`Server is running on localhost:${PORT}`);

@@ -74,7 +74,7 @@ const TravelStoriesCard = ({ rateContainer }) => {
             <img
               data-aos="fade-in"
               data-aos-delay={index + "00"}
-              src={`https://travelpulse.onrender.com/${story.img}`}
+              src={story.img}
               className="image"
               alt="croatia img"
             />
