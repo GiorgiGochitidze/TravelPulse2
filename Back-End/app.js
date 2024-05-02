@@ -13,7 +13,6 @@ const StoriesSchema = require("./StoriesData");
 const Card = require("./DestinationsCard");
 const { v2: cloudinary } = require('cloudinary');
 
-
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -136,9 +135,6 @@ app.post("/createBlogStories", upload.single('image'), (req, res) => {
       });
   });
 });
-
-
-
 
 app.post("/loadBlogStories", (req, res) => {
   StoriesSchema.find({})
