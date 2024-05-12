@@ -1,69 +1,71 @@
 import { FaHeart } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
+const token = sessionStorage.getItem("token");
+const decoded = token ? jwtDecode(token) : "token doesnt exists";
 
-const TravelStoriesCard = ({ rateContainer }) => {
-  // Initialize likes, colors, and liked state
-  const [likes, setLikes] = useState([]);
-  const [colors, setColors] = useState([]);
-  const [liked, setLiked] = useState([]);
-
+const TravelStoriesCard = () => {
   // Initialize storiesData state
   const [storiesData, setStoriesData] = useState([]);
+  const [userLiked, setUserLiked] = useState([]);
+  const [likesNums, setLikesNums] = useState({});
 
   useEffect(() => {
     axios
-      .post("https://travelpulse.onrender.com/loadBlogStories")
+      .post("http://localhost:5000/loadBlogStories", {
+        username: decoded.username,
+      })
       .then((response) => {
         // Set the storiesData state with the fetched data
-        setStoriesData(response.data);
-
-        // Initialize likes, colors, and liked state based on fetched data
-        const initialLikes = response.data.map((story) => story.likes);
-        const initialLiked = response.data.map((story) => story.liked || false);
-        setLikes(initialLikes);
-        setLiked(initialLiked);
-        setColors(initialLiked.map((isLiked) => (isLiked ? "red" : "white")));
+        setStoriesData(response.data.stories);
+        setUserLiked(response.data.userLiked);
+        // Initialize likes numbers for each story
+        const initialLikesNums = {};
+        response.data.stories.forEach((story) => {
+          initialLikesNums[story._id] = story.liked.length;
+        });
+        setLikesNums(initialLikesNums);
       })
       .catch((error) => {
         console.error("Error fetching blog stories:", error);
       });
   }, []);
 
-  const handleLike = async (index) => {
-    // Toggle the liked state for the clicked post
-    const newLiked = [...liked];
-    newLiked[index] = !newLiked[index];
-    setLiked(newLiked);
+  console.log(userLiked);
 
-    // Update the like count based on the liked state
-    const newLikes = [...likes];
-    newLikes[index] = newLiked[index] ? likes[index] + 1 : likes[index] - 1;
-    setLikes(newLikes);
+  const handleLike = ({ storyId, username }) => {
+    const isLiked = userLiked.includes(storyId);
 
-    // Toggle the color based on the liked state
-    const newColors = [...colors];
-    newColors[index] = newLiked[index] ? "red" : "white";
-    setColors(newColors);
-
-    const storyId = storiesData[index]._id;
-
-    try {
-      // Send the like status along with the story ID to the server
-      await axios.post("https://travelpulse.onrender.com/likeStory", {
+    axios
+      .post("http://localhost:5000/likeStory", {
         storyId: storyId,
-        liked: newLiked[index], // Send the updated like status
+        username: username,
+      })
+      .then((response) => {
+        console.log("liked successfully", response.data);
+        if (isLiked) {
+          // Remove the story ID from userLiked if it was previously liked
+          setUserLiked((prevUserLiked) =>
+            prevUserLiked.filter((id) => id !== storyId)
+          );
+          setLikesNums((prevLikesNums) => ({
+            ...prevLikesNums,
+            [storyId]: prevLikesNums[storyId] - 1,
+          }));
+        } else {
+          // Add the story ID to userLiked if it was not previously liked
+          setUserLiked((prevUserLiked) => [...prevUserLiked, storyId]);
+          setLikesNums((prevLikesNums) => ({
+            ...prevLikesNums,
+            [storyId]: prevLikesNums[storyId] + 1,
+          }));
+        }
+      })
+      .catch((err) => {
+        console.log("Internal server error:", err);
       });
-      console.log("Like action sent successfully");
-    } catch (error) {
-      console.error("Error sending like action:", error);
-      // If there's an error, revert the changes made to the state
-      setLiked([...liked]);
-      setLikes([...likes]);
-      setColors([...colors]);
-      // You can also display an error message to the user
-    }
   };
 
   return (
@@ -78,28 +80,22 @@ const TravelStoriesCard = ({ rateContainer }) => {
               className="image"
               alt="croatia img"
             />
-            {rateContainer && (
+            {token && (
               <FaHeart
-                onClick={() => handleLike(index)}
-                onMouseEnter={() =>
-                  setColors((prevColors) =>
-                    prevColors.map((color, i) =>
-                      i === index ? (liked[index] ? "white" : "red") : color
-                    )
-                  )
-                }
-                onMouseLeave={() =>
-                  setColors((prevColors) =>
-                    prevColors.map((color, i) =>
-                      i === index ? (liked[index] ? "red" : "white") : color
-                    )
-                  )
-                }
                 size={25}
                 className="heart-icon"
-                style={{ color: colors[index] }}
-                // Disable the like button if the card has already been liked
-                disabled={liked[index]}
+                style={{
+                  color:
+                    likesNums[story._id] > 0 && userLiked.includes(story._id)
+                      ? "red"
+                      : "white",
+                }}
+                onClick={() => {
+                  handleLike({
+                    storyId: story._id,
+                    username: decoded.username,
+                  });
+                }}
               />
             )}
           </div>
@@ -118,7 +114,7 @@ const TravelStoriesCard = ({ rateContainer }) => {
             {story.content}
           </p>
 
-          {rateContainer && <p>Likes: {likes[index]}</p>}
+          {token && <p>Likes: {likesNums[story._id]}</p>}
         </div>
       ))}
     </>

@@ -2,10 +2,10 @@ import TravelStoriesCard from "./TravelStoriesCard";
 
 
 
-const StoriesList = ({rateContainer}) => {
+const StoriesList = () => {
   return (
     <div className="travelstories-list">
-      <TravelStoriesCard  rateContainer={rateContainer} />
+      <TravelStoriesCard />
     </div>
   );
 };

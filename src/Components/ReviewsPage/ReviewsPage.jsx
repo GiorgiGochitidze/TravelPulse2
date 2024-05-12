@@ -19,7 +19,6 @@ const ReviewsPage = () => {
       </div>
 
       <TravelStories
-        rateContainer={true}
         headingVal={"Top places with reviews"}
         descVal={"Travelers want to see more reviews of these places."}
         ReviewBtn={true}

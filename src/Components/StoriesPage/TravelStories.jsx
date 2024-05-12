@@ -8,7 +8,6 @@ import axios from "axios";
 const TravelStories = ({
   setShowUpload,
   showUpload,
-  rateContainer,
   buttonState,
   textPos,
   headingVal,
@@ -30,13 +29,12 @@ const TravelStories = ({
   };
 
   const handleAddPost = () => {
-
     if (!image || !country || !publishDate || !title || !content) {
       // If any required field is missing, display an error message
       alert("Please fill in all the required fields.");
       return; // Exit the function early
     }
-  
+
     // Create FormData object
     const formData = new FormData();
     formData.append("image", image);
@@ -46,7 +44,7 @@ const TravelStories = ({
     formData.append("content", content);
 
     axios
-      .post("https://travelpulse.onrender.com/createBlogStories", formData, {
+      .post("http://localhost:5000/createBlogStories", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -108,7 +106,7 @@ const TravelStories = ({
           </button>
         )}
       </div>
-      {!showUpload && <StoriesList rateContainer={rateContainer} />}
+      {!showUpload && <StoriesList />}
 
       {showUpload && (
         <div className="upload-image-container">
@@ -121,9 +119,6 @@ const TravelStories = ({
                 onChange={handleFileChange}
                 required
               />
-              <label htmlFor="file" className="custom-button">
-                აირჩიეთ ფაილი
-              </label>
 
               {/* Show the selected image */}
               {image && (
@@ -133,78 +128,59 @@ const TravelStories = ({
                   alt={image.name}
                 />
               )}
+              <label htmlFor="file" className="custom-button">
+                Choose File
+              </label>
             </div>
           </div>
 
           <div className="form-container">
             <div className="name-desc-container">
-              <label htmlFor="title">
-                <span style={{ fontWeight: 700, fontSize: "25px" }}>
-                  Title of your review
-                </span>
-                <input
-                  id="title"
-                  name="title"
-                  placeholder="Summarize your Travel Journey"
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  required
-                />
-              </label>
-              <label htmlFor="description">
-                <span style={{ fontWeight: 700, fontSize: "25px" }}>
-                  Your Review
-                </span>
-                <textarea
-                  placeholder="A detailed review of your Travel Journey. Travellers will love to know your experience"
-                  name="description"
-                  id="description"
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  required
-                ></textarea>
-              </label>
-            </div>
-
-            <div className="date-form-container">
-              <label htmlFor="location">
-                <span>Location</span>
-                <input
-                  id="location"
-                  placeholder="Enter Travel Location"
-                  name="location"
-                  type="text"
-                  value={country}
-                  onChange={(e) => setCountry(e.target.value)}
-                  required
-                />
-              </label>
-
+                <label htmlFor="location">
+                  <input
+                    id="location"
+                    placeholder="Enter Travel Location"
+                    name="location"
+                    type="text"
+                    value={country}
+                    onChange={(e) => setCountry(e.target.value)}
+                    required
+                  />
+                </label>
               <label htmlFor="date">
-                <span>When Did You Traveled</span>
-                <input
-                  id="date"
-                  name="date"
-                  required
-                  type="date"
-                  value={publishDate}
-                  onChange={(e) => setPublishDate(e.target.value)}
-                />
-              </label>
-            </div>
+                  <input
+                    id="date"
+                    name="date"
+                    required
+                    type="date"
+                    value={publishDate}
+                    onChange={(e) => setPublishDate(e.target.value)}
+                  />
+                </label>
+                <label htmlFor="title">
+                  <input
+                    id="title"
+                    name="title"
+                    placeholder="Title of review"
+                    type="text"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    required
+                  />
+                </label>
 
-            <div className="checkbox-container">
-              <input type="checkbox" required />
-              <p>
-                I certify that the information in this review is based solely on
-                my own experiences with the product or service in question. I
-                also attest that I have no personal or professional affiliation
-                with the business in question and have not been given any
-                incentives or payment from the business to write this review. I
-                am aware that fake reviews are strictly prohibited on
-                Tripadvisor.
-              </p>
+                
+                <label htmlFor="description">
+                  <textarea
+                  style={{marginTop: '20px'}}
+                    placeholder="A detailed review of your Travel Journey. Travellers will love to know your experience"
+                    name="description"
+                    id="description"
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                    required
+                  ></textarea>
+                </label>
             </div>
             <button onClick={handleAddPost} className="submit-btn">
               Add Post

@@ -27,6 +27,7 @@
 	top: calc(var(--index) * 2.8);
 	z-index: 1;
     background-image: url('../../assets/logo.svg');
+
 }
 .layers {
 	perspective: 1000px;
