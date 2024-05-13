@@ -33,10 +33,20 @@ const TravelStoriesCard = () => {
       });
   }, []);
 
-  console.log(userLiked);
-
   const handleLike = ({ storyId, username }) => {
     const isLiked = userLiked.includes(storyId);
+
+    setLikesNums(() => ({
+      ...likesNums,
+      [storyId]: isLiked ? likesNums[storyId] - 1 : likesNums[storyId] + 1,
+    }));
+    setUserLiked(() => {
+      if (isLiked) {
+        return userLiked.filter((id) => id !== storyId);
+      } else {
+        return [...userLiked, storyId];
+      }
+    });
 
     axios
       .post("http://localhost:5000/likeStory", {
@@ -45,23 +55,21 @@ const TravelStoriesCard = () => {
       })
       .then((response) => {
         console.log("liked successfully", response.data);
-        if (isLiked) {
-          // Remove the story ID from userLiked if it was previously liked
-          setUserLiked((prevUserLiked) =>
-            prevUserLiked.filter((id) => id !== storyId)
-          );
-          setLikesNums((prevLikesNums) => ({
-            ...prevLikesNums,
-            [storyId]: prevLikesNums[storyId] - 1,
-          }));
-        } else {
-          // Add the story ID to userLiked if it was not previously liked
-          setUserLiked((prevUserLiked) => [...prevUserLiked, storyId]);
-          setLikesNums((prevLikesNums) => ({
-            ...prevLikesNums,
-            [storyId]: prevLikesNums[storyId] + 1,
-          }));
-        }
+      })
+      .catch((err) => {
+        console.log("Internal server error:", err);
+      });
+  };
+
+  const handleDeletePost = (storyId) => {
+    axios
+      .post("http://localhost:5000/deleteStory", {
+        storyId: storyId,
+      })
+      .then((response) => {
+        console.log("Post deleted successfully", response.data);
+        // Optionally, update state to remove the deleted post from the UI
+        window.location.reload()
       })
       .catch((err) => {
         console.log("Internal server error:", err);
@@ -80,15 +88,17 @@ const TravelStoriesCard = () => {
               className="image"
               alt="croatia img"
             />
+            {decoded.username === story.author && (
+              <button className="del-btn" onClick={() => handleDeletePost(story._id)}>
+                X
+              </button>
+            )}
             {token && (
               <FaHeart
                 size={25}
                 className="heart-icon"
                 style={{
-                  color:
-                    likesNums[story._id] > 0 && userLiked.includes(story._id)
-                      ? "red"
-                      : "white",
+                  color: userLiked.includes(story._id) ? "red" : "white",
                 }}
                 onClick={() => {
                   handleLike({

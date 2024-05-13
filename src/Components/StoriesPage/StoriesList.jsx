@@ -1,11 +1,14 @@
-import TravelStoriesCard from "./TravelStoriesCard";
+import Loading from "../Loading";
+import { lazy, Suspense } from "react";
 
-
+const TravelStoriesCard = lazy(() => import("./TravelStoriesCard.jsx"));
 
 const StoriesList = () => {
   return (
     <div className="travelstories-list">
-      <TravelStoriesCard />
+      <Suspense fallback={<Loading />}>
+        <TravelStoriesCard />
+      </Suspense>
     </div>
   );
 };

@@ -4,6 +4,10 @@ import StoriesList from "./StoriesList";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
+
+const token = sessionStorage.getItem('token')
+const decoded = token ? jwtDecode(token) : 'token doesnt presists'
 
 const TravelStories = ({
   setShowUpload,
@@ -28,7 +32,7 @@ const TravelStories = ({
     }
   };
 
-  const handleAddPost = () => {
+  const handleAddPost = ({author}) => {
     if (!image || !country || !publishDate || !title || !content) {
       // If any required field is missing, display an error message
       alert("Please fill in all the required fields.");
@@ -42,6 +46,7 @@ const TravelStories = ({
     formData.append("publish_date", publishDate);
     formData.append("title", title);
     formData.append("content", content);
+    formData.append("author", author);
 
     axios
       .post("http://localhost:5000/createBlogStories", formData, {
@@ -182,7 +187,7 @@ const TravelStories = ({
                   ></textarea>
                 </label>
             </div>
-            <button onClick={handleAddPost} className="submit-btn">
+            <button onClick={() => handleAddPost({author: decoded.username})} className="submit-btn">
               Add Post
             </button>
           </div>

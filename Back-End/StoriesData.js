@@ -10,8 +10,7 @@ const storySchema = new mongoose.Schema({
     type: Array,
     default: 0,
   },
+  author: String,
 });
 
-const StoriesSchema = mongoose.model("Stories", storySchema);
-
-module.exports = StoriesSchema;
+module.exports = mongoose.model("Stories", storySchema);

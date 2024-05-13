@@ -43,6 +43,27 @@
   transition: 0.2s all;
 }
 
+.del-btn{
+  position: absolute;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  border: 0;
+  background-color: white;
+  right: 60px;
+  top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: 0.2s all;
+}
+
+.del-btn:hover{
+  background-color: rgba(255, 0, 0, 0.9);
+  color: white;
+  box-shadow: 0 5px 15px red;
+}
+
 .heart-icon:hover {
   cursor: url("/src/assets/handcursor.png"), auto;
 }
@@ -61,11 +82,11 @@
   max-width: 600px;
   width: auto;
   height: auto;
-  min-height: 400px;
   overflow: hidden;
   border-radius: 20px;
   padding: 15px;
   box-shadow: 0 0px 30px rgb(0, 0, 0, 0.1);
+  position: relative;
 }
 
 .travelstories-card img {
