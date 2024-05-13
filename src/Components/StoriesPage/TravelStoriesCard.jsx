@@ -14,7 +14,7 @@ const TravelStoriesCard = () => {
 
   useEffect(() => {
     axios
-      .post("http://localhost:5000/loadBlogStories", {
+      .post("https://travelpulse.onrender.com/loadBlogStories", {
         username: decoded.username,
       })
       .then((response) => {
@@ -49,7 +49,7 @@ const TravelStoriesCard = () => {
     });
 
     axios
-      .post("http://localhost:5000/likeStory", {
+      .post("https://travelpulse.onrender.com/likeStory", {
         storyId: storyId,
         username: username,
       })
@@ -63,7 +63,7 @@ const TravelStoriesCard = () => {
 
   const handleDeletePost = (storyId) => {
     axios
-      .post("http://localhost:5000/deleteStory", {
+      .post("https://travelpulse.onrender.com/deleteStory", {
         storyId: storyId,
       })
       .then((response) => {

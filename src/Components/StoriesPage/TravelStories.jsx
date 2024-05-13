@@ -49,7 +49,7 @@ const TravelStories = ({
     formData.append("author", author);
 
     axios
-      .post("http://localhost:5000/createBlogStories", formData, {
+      .post("https://travelpulse.onrender.com/createBlogStories", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
