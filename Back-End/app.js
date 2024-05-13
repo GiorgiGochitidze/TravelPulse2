@@ -17,10 +17,18 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
-// Remove the multer diskStorage configuration
-const upload = multer();
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "uploads/"); // Specify the destination folder
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname); // Use the original filename
+  },
+});
 
-// app.use("/uploads", express.static("uploads"));
+const upload = multer({ storage: storage });
+
+app.use("/uploads", express.static("uploads"));
 
 const passwordDB = process.env.USERPASS;
 const ApiSecretKey = process.env.CLOUDINARY_APISECRET;
@@ -68,40 +76,52 @@ const generateToken = (user) => {
   });
 };
 
+app.post("/createBlogStories", upload.single("image"), async (req, res) => {
+  const { country, publish_date, title, content, author, imageName } = req.body;
+  const file = req.file; // Get the uploaded file
 
-app.post("/createBlogStories", upload.single("image"), (req, res) => {
-  const { country, publish_date, title, content, author } = req.body;
+  console.log(imageName);
 
-  // Upload image to Cloudinary
-  cloudinary.uploader.upload(req.file.path, { folder: "blog_images" }, (error, result) => {
-    if (error) {
-      console.error("Error uploading image to Cloudinary:", error);
-      return res.status(500).send("Internal Server Error");
-    }
+  // Check if file exists
+  if (!file) {
+    return res.status(400).send("Please upload a file");
+  }
 
-    // Create a new story instance with the Cloudinary image URL
-    const newStory = new StoriesSchema({
-      img: result.secure_url,
-      country: country,
-      publish_date: publish_date,
-      title: title,
-      content: content,
-      liked: [],
-      author: author,
-    });
+  try {
+    // Upload the file to Cloudinary with the specified folder name
+    cloudinary.uploader.upload(
+      file.path,
+      {
+        folder: "blog_images",
+      },
+      async (err, result) => {
+        if (err) {
+          console.error("Error uploading image to Cloudinary:", err);
+          return res.status(500).send("Internal Server Error");
+        }
 
-    // Save the new story to the database
-    newStory
-      .save()
-      .then(() => {
+        // Create a new story instance with the Cloudinary image URL
+        const newStory = new StoriesSchema({
+          img: result.secure_url,
+          country: country,
+          publish_date: publish_date,
+          title: title,
+          content: content,
+          liked: [],
+          author: author,
+          imageName: imageName,
+        });
+
+        // Save the new story to the database
+        await newStory.save();
         console.log("New story added successfully");
         res.status(200).send("New story added successfully");
-      })
-      .catch((err) => {
-        console.error("Error adding new story:", err);
-        res.status(500).send("Internal Server Error");
-      });
-  });
+      }
+    );
+  } catch (error) {
+    console.error("Error uploading image to Cloudinary:", error);
+    res.status(500).send("Internal Server Error");
+  }
 });
 
 app.post("/loadBlogStories", async (req, res) => {
@@ -250,18 +270,25 @@ app.post("/likeStory", async (req, res) => {
 });
 
 app.post("/deleteStory", async (req, res) => {
-  const { storyId } = req.body;
+  const { storyId, imageName } = req.body;
+
+  console.log(imageName);
 
   try {
     // Find the story by ID
     const story = await StoriesSchema.findById(storyId);
+    console.log(story);
 
     if (!story) {
       return res.status(404).json({ message: "Story not found" });
     }
 
+    if (!imageName) {
+      return res.status(404).json({ message: "file not found" });
+    }
+
     // Extract the public ID from the Cloudinary URL
-    const cloudinaryPublicId = story.img.split("/").pop().split(".")[0];
+    const cloudinaryPublicId = cloudinary.url(story.img)
 
     // Delete image from Cloudinary
     cloudinary.uploader.destroy(cloudinaryPublicId, async (error, result) => {
@@ -269,8 +296,23 @@ app.post("/deleteStory", async (req, res) => {
         console.error("Error deleting image from Cloudinary:", error);
         return res.status(500).send("Internal Server Error");
       }
+      console.log(result)
 
       console.log("Image deleted from Cloudinary");
+
+      // Delete the image from the uploads folder
+      try {
+        fs.unlink(`./uploads/${imageName}`, (err) => {
+          if (err) {
+            console.error("Error deleting image from uploads folder:", err);
+            return res.status(500).send("Internal Server Error");
+          }
+          console.log("Image deleted from uploads folder");
+        });
+      } catch (err) {
+        console.error("Error deleting image from uploads folder:", err);
+        return res.status(500).send("Internal Server Error");
+      }
 
       // Delete the story from the database
       try {
@@ -287,7 +329,6 @@ app.post("/deleteStory", async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
-
 
 app.listen(PORT, () => {
   console.log(`Server is running on localhost:${PORT}`);

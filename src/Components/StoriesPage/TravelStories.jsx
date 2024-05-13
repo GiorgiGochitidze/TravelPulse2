@@ -25,43 +25,48 @@ const TravelStories = ({
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
 
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      setImage(file);
-    }
-  };
+const handleFileChange = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    // Get the file path
+    setImage(file);
+  }
+};
+ 
 
-  const handleAddPost = ({author}) => {
-    if (!image || !country || !publishDate || !title || !content) {
-      // If any required field is missing, display an error message
-      alert("Please fill in all the required fields.");
-      return; // Exit the function early
-    }
+const handleAddPost = async ({ author }) => {
+  if (!image || !country || !publishDate || !title || !content) {
+    // If any required field is missing, display an error message
+    alert("Please fill in all the required fields.");
+    return; // Exit the function early
+  }
 
-    // Create FormData object
-    const formData = new FormData();
-    formData.append("image", image);
-    formData.append("country", country);
-    formData.append("publish_date", publishDate);
-    formData.append("title", title);
-    formData.append("content", content);
-    formData.append("author", author);
+  const formData = new FormData();
+  formData.append("image", image);
+  formData.append("imageName", image.name); 
+  formData.append("country", country);
+  formData.append("publish_date", publishDate);
+  formData.append("title", title);
+  formData.append("content", content);
+  formData.append("author", author);
 
-    axios
-      .post("https://travelpulse.onrender.com/createBlogStories", formData, {
+  try {
+    const response = await axios.post(
+      "https://travelpulse.onrender.com/createBlogStories",
+      formData,
+      {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-      })
-      .then((response) => {
-        console.log("Post added successfully:", response.data);
-        window.location.reload();
-      })
-      .catch((error) => {
-        console.error("Error adding post:", error);
-      });
-  };
+      }
+    );
+    console.log("Post added successfully:", response.data);
+    window.location.reload();
+  } catch (error) {
+    console.error("Error adding post:", error);
+  }
+};
+
 
   return (
     <div className="travelstories-container">

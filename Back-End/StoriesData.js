@@ -11,6 +11,7 @@ const storySchema = new mongoose.Schema({
     default: 0,
   },
   author: String,
+  imageName: String,
 });
 
 module.exports = mongoose.model("Stories", storySchema);

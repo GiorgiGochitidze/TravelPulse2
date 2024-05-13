@@ -1,13 +1,12 @@
 import { FaHeart } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { jwtDecode } from "jwt-decode";
+import { jwtDecode } from "jwt-decode"; // Corrected import
 
 const token = sessionStorage.getItem("token");
 const decoded = token ? jwtDecode(token) : "token doesnt exists";
 
 const TravelStoriesCard = () => {
-  // Initialize storiesData state
   const [storiesData, setStoriesData] = useState([]);
   const [userLiked, setUserLiked] = useState([]);
   const [likesNums, setLikesNums] = useState({});
@@ -18,10 +17,8 @@ const TravelStoriesCard = () => {
         username: decoded.username,
       })
       .then((response) => {
-        // Set the storiesData state with the fetched data
         setStoriesData(response.data.stories);
         setUserLiked(response.data.userLiked);
-        // Initialize likes numbers for each story
         const initialLikesNums = {};
         response.data.stories.forEach((story) => {
           initialLikesNums[story._id] = story.liked.length;
@@ -36,15 +33,17 @@ const TravelStoriesCard = () => {
   const handleLike = ({ storyId, username }) => {
     const isLiked = userLiked.includes(storyId);
 
-    setLikesNums(() => ({
-      ...likesNums,
-      [storyId]: isLiked ? likesNums[storyId] - 1 : likesNums[storyId] + 1,
+    setLikesNums((prevLikesNums) => ({
+      ...prevLikesNums,
+      [storyId]: isLiked
+        ? prevLikesNums[storyId] - 1
+        : prevLikesNums[storyId] + 1,
     }));
-    setUserLiked(() => {
+    setUserLiked((prevUserLiked) => {
       if (isLiked) {
-        return userLiked.filter((id) => id !== storyId);
+        return prevUserLiked.filter((id) => id !== storyId);
       } else {
-        return [...userLiked, storyId];
+        return [...prevUserLiked, storyId];
       }
     });
 
@@ -61,15 +60,15 @@ const TravelStoriesCard = () => {
       });
   };
 
-  const handleDeletePost = (storyId) => {
-    axios
+  const handleDeletePost = async ({ storyId, imageName }) => {
+    await axios
       .post("https://travelpulse.onrender.com/deleteStory", {
         storyId: storyId,
+        imageName: imageName,
       })
       .then((response) => {
         console.log("Post deleted successfully", response.data);
-        // Optionally, update state to remove the deleted post from the UI
-        window.location.reload()
+        window.location.reload();
       })
       .catch((err) => {
         console.log("Internal server error:", err);
@@ -78,55 +77,67 @@ const TravelStoriesCard = () => {
 
   return (
     <>
-      {storiesData.map((story, index) => (
-        <div key={index} className="travelstories-card">
-          <div style={{ position: "relative" }}>
-            <img
-              data-aos="fade-in"
-              data-aos-delay={index + "00"}
-              src={story.img}
-              className="image"
-              alt="croatia img"
-            />
-            {decoded.username === story.author && (
-              <button className="del-btn" onClick={() => handleDeletePost(story._id)}>
-                X
-              </button>
-            )}
-            {token && (
-              <FaHeart
-                size={25}
-                className="heart-icon"
-                style={{
-                  color: userLiked.includes(story._id) ? "red" : "white",
-                }}
-                onClick={() => {
-                  handleLike({
-                    storyId: story._id,
-                    username: decoded.username,
-                  });
-                }}
+      {storiesData.length > 0 ? (
+        storiesData.map((story, index) => (
+          <div key={index} className="travelstories-card">
+            <div style={{ position: "relative" }}>
+              <img
+                data-aos="fade-in"
+                data-aos-delay={index + "00"}
+                src={story.img}
+                className="image"
+                alt="croatia img"
               />
-            )}
-          </div>
-          <div className="travelstories-date-container">
-            <p data-aos="fade-up" data-aos-delay={index + "00"}>
-              {story.country}
+              {decoded.username === story.author && (
+                <button
+                  className="del-btn"
+                  onClick={() =>
+                    handleDeletePost({
+                      storyId: story._id,
+                      imageName: story.imageName,
+                    })
+                  }
+                >
+                  X
+                </button>
+              )}
+              {token && (
+                <FaHeart
+                  size={25}
+                  className="heart-icon"
+                  style={{
+                    color: userLiked.includes(story._id) ? "red" : "white",
+                  }}
+                  onClick={() => {
+                    handleLike({
+                      storyId: story._id,
+                      username: decoded.username,
+                    });
+                  }}
+                />
+              )}
+            </div>
+            <div className="travelstories-date-container">
+              <p data-aos="fade-up" data-aos-delay={index + "00"}>
+                {story.country}
+              </p>
+              <p data-aos="fade-up" data-aos-delay={index + "05"}>
+                {story.publish_date}
+              </p>
+            </div>
+            <h2 data-aos="fade-up" data-aos-delay={index + "10"}>
+              {story.title}
+            </h2>
+            <p data-aos="fade-up" data-aos-delay={index + "15"}>
+              {story.content}
             </p>
-            <p data-aos="fade-up" data-aos-delay={index + "05"}>
-              {story.publish_date}
-            </p>
-          </div>
-          <h2 data-aos="fade-up" data-aos-delay={index + "10"}>
-            {story.title}
-          </h2>
-          <p data-aos="fade-up" data-aos-delay={index + "15"}>
-            {story.content}
-          </p>
 
-          {token && <p>Likes: {likesNums[story._id]}</p>}
-        </div>
-      ))}
+            {token && <p>Likes: {likesNums[story._id]}</p>}
+          </div>
+        ))
+      ) : (
+        <h2>No items found please wait or create your own post</h2>
+      )}
     </>
   );
 };
