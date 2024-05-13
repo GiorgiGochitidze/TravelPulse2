@@ -14,4 +14,4 @@ const storySchema = new mongoose.Schema({
   imageName: String,
 });
 
-module.exports = mongoose.model("Stories", storySchema);
+module.exports = mongoose.model("stories", storySchema);
