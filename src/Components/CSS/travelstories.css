@@ -60,12 +60,13 @@
 
 .del-btn:hover{
   background-color: rgba(255, 0, 0, 0.9);
+  cursor: pointer;
   color: white;
   box-shadow: 0 5px 15px red;
 }
 
 .heart-icon:hover {
-  cursor: url("/src/assets/handcursor.png"), auto;
+  cursor: pointer;
 }
 
 .travelstories-list {
