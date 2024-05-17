@@ -17,6 +17,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
+
+if (!fs.existsSync('./uploads')) {
+  fs.mkdirSync("./uploads");
+}
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "uploads/"); // Specify the destination folder
@@ -79,10 +84,6 @@ const generateToken = (user) => {
 app.post("/createBlogStories", upload.single("image"), async (req, res) => {
   const { country, publish_date, title, content, author, imageName } = req.body;
   const file = req.file; // Get the uploaded file
-
-  if (!fs.existsSync('./uploads')) {
-    fs.mkdirSync("./uploads");
-  }
 
 
   // Check if file exists

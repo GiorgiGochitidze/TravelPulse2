@@ -4,3 +4,7 @@
 	--transition: 1.5s cubic-bezier(.05, .5, 0, 1);
   font-family: 'Urbanist', sans-serif;
 }
+
+button:hover{
+  cursor: pointer;
+}
